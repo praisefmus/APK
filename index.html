@@ -42,14 +42,24 @@
   <img src="assets/logo.png" alt="Praise FM Logo" />
   <h1>Praise FM - U.S Radio</h1>
   <p>Praise and Worship</p>
-  <audio controls autoplay>
+  <audio controls>
     <source src="https://stream.zeno.fm/hvwifp8ezc6tv" type="audio/mpeg" />
     Your browser does not support the audio element.
   </audio>
-  <p><a href="https://www.instagram.com/fmpraise.usa/" target="_blank">Follow us on Instagram</a></p>
+  <p><a href="https://www.instagram.com/fmpraise.usa/" target="_blank" rel="noopener">Follow us on Instagram</a></p>
+
+  <!-- Service Worker Registration -->
   <script>
     if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('service-worker.js');
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('service-worker.js')
+          .then(registration => {
+            console.log('Service Worker registrado com sucesso:', registration.scope);
+          })
+          .catch(error => {
+            console.warn('Falha ao registrar Service Worker:', error);
+          });
+      });
     }
   </script>
 </body>
