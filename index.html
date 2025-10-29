@@ -34,23 +34,10 @@
       padding: 25px;
       box-shadow: 0 10px 30px rgba(0,0,0,0.2);
     }
-    .logo-text {
-      font-size: 2.8rem;
-      font-weight: 900;
-      letter-spacing: -1px;
-      line-height: 1.1;
-      text-transform: uppercase;
-      margin-bottom: 8px;
-      text-shadow: 0 2px 4px rgba(0,0,0,0.3);
-      font-family: 'Arial Black', Arial, sans-serif;
-    }
-    .logo-sub {
-      font-size: 1rem;
-      font-weight: 700;
-      letter-spacing: 1px;
-      text-transform: uppercase;
-      opacity: 0.9;
-      font-family: 'Arial Black', Arial, sans-serif;
+    .logo {
+      width: 180px;
+      margin-bottom: 20px;
+      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
     }
     .now-playing {
       background: rgba(255, 255, 255, 0.15);
@@ -114,20 +101,17 @@
     .social a:hover {
       background: rgba(255, 255, 255, 0.4);
     }
-    .loading {
-      opacity: 0.7;
-    }
   </style>
 </head>
 <body>
   <div class="container">
-    <div class="logo-text">PRAISE FM</div>
-    <div class="logo-sub">UNITED STATE</div>
+    <!-- Logo branco da pasta assets -->
+    <img src="/APK/assets/logo.png" alt="Praise FM Logo" class="logo" />
 
-    <h1 style="margin-top: 20px; font-size: 1.8rem;">Live Gospel Radio</h1>
+    <h1 style="margin-top: 10px; font-size: 1.8rem;">Live Gospel Radio</h1>
 
     <div class="now-playing">
-      <img id="cover" class="cover" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 140 140'%3E%3Crect width='140' height='140' fill='%23ffffff' opacity='0.1'/%3E%3Ctext x='70' y='75' font-size='40' text-anchor='middle' fill='%23ffffff' opacity='0.5'%3E🎵%3C/text%3E%3C/svg%3E" alt="Capa do álbum" />
+      <img id="cover" class="cover" src="image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 140 140'%3E%3Crect width='140' height='140' fill='%23ffffff' opacity='0.1'/%3E%3Ctext x='70' y='75' font-size='40' text-anchor='middle' fill='%23ffffff' opacity='0.5'%3E🎵%3C/text%3E%3C/svg%3E" alt="Capa do álbum" />
       <div class="song-title" id="title">Carregando...</div>
       <div class="artist" id="artist">Praise FM</div>
     </div>
@@ -151,7 +135,7 @@
     // === CONFIGURAÇÃO ===
     const LAST_FM_API_KEY = '7744c8f90ee053fc761e0e23bfa00b89';
     const RADIO_TITLE = 'Praise FM';
-    const DEFAULT_COVER = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 140 140'%3E%3Crect width='140' height='140' fill='%23ffffff' opacity='0.1'/%3E%3Ctext x='70' y='75' font-size='40' text-anchor='middle' fill='%23ffffff' opacity='0.5'%3E🎵%3C/text%3E%3C/svg%3E";
+    const DEFAULT_COVER = "image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 140 140'%3E%3Crect width='140' height='140' fill='%23ffffff' opacity='0.1'/%3E%3Ctext x='70' y='75' font-size='40' text-anchor='middle' fill='%23ffffff' opacity='0.5'%3E🎵%3C/text%3E%3C/svg%3E";
 
     // === ELEMENTOS ===
     const radio = document.getElementById('radio');
@@ -169,8 +153,6 @@
     function updateNowPlaying(artist, title) {
       artistEl.textContent = artist || RADIO_TITLE;
       titleEl.textContent = title || 'Live Stream';
-      
-      // Buscar capa no Last.fm
       if (artist && title) {
         fetchAlbumCover(artist, title);
       } else {
@@ -185,76 +167,52 @@
         const response = await fetch(url);
         const data = await response.json();
 
-        if (data.track && data.track.album && data.track.album.image) {
-          // Pega a maior imagem disponível
+        if (data.track?.album?.image) {
           const images = data.track.album.image;
           const largeImage = images.find(img => img.size === 'extralarge') || 
                             images.find(img => img.size === 'large') || 
                             images.find(img => img.size === 'medium');
-          
-          if (largeImage && largeImage['#text']) {
+          if (largeImage?.['#text']) {
             coverEl.src = largeImage['#text'];
             return;
           }
         }
       } catch (error) {
-        console.warn('Erro ao buscar capa no Last.fm:', error);
+        console.warn('Erro ao buscar capa:', error);
       }
-      // Fallback
       coverEl.src = DEFAULT_COVER;
     }
 
-    // === FUNÇÃO: Extrair artista e título do stream ===
+    // === FUNÇÃO: Extrair artista e título ===
     function parseStreamTitle(streamTitle) {
       if (!streamTitle || streamTitle === 'Carregando...') return null;
-
-      // Remove sufixos comuns
       let clean = streamTitle.replace(/\s*-\s*Stream\s*$/i, '');
-      clean = clean.replace(/\s*\[.*?\]\s*/g, ''); // Remove [LIVE], etc.
-
-      // Tenta dividir por " - "
+      clean = clean.replace(/\s*\[.*?\]\s*/g, '');
       const parts = clean.split(/\s*-\s*/);
       if (parts.length >= 2) {
-        return {
-          artist: parts[0].trim(),
-          title: parts.slice(1).join(' - ').trim()
-        };
+        return { artist: parts[0].trim(), title: parts.slice(1).join(' - ').trim() };
       }
-
-      // Se não tiver " - ", assume que é só o título
-      return {
-        artist: RADIO_TITLE,
-        title: clean.trim()
-      };
+      return { artist: RADIO_TITLE, title: clean.trim() };
     }
 
     // === MONITORAMENTO DO STREAM ===
     let lastTitle = '';
     function checkStreamMetadata() {
       try {
-        // Em alguns navegadores, o título aparece no próprio elemento de áudio
         const currentTitle = radio.title || document.title;
-        
         if (currentTitle && currentTitle !== lastTitle && !currentTitle.includes('Carregando')) {
           lastTitle = currentTitle;
           const parsed = parseStreamTitle(currentTitle);
-          if (parsed) {
-            updateNowPlaying(parsed.artist, parsed.title);
-          }
+          if (parsed) updateNowPlaying(parsed.artist, parsed.title);
         }
       } catch (e) {
         console.warn('Erro ao verificar metadados:', e);
       }
     }
 
-    // Verifica a cada 8 segundos
     setInterval(checkStreamMetadata, 8000);
-
-    // Primeira verificação ao carregar
     window.addEventListener('load', () => {
       setTimeout(checkStreamMetadata, 2000);
-      
-      // Service Worker
       if ('serviceWorker' in navigator) {
         navigator.serviceWorker.register('/APK/service-worker.js')
           .then(reg => console.log('SW registrado:', reg.scope))
