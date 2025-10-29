@@ -2,10 +2,16 @@
   "name": "Praise FM - U.S Radio",
   "short_name": "Praise FM",
   "description": "Praise and Worship - Live Radio from the United States.",
-  "start_url": ".",
+  "start_url": "/",
+  "scope": "/",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#ff7b54",
+  "lang": "en-US",
+  "dir": "ltr",
+  "orientation": "any",
+  "id": "com.praisefmus.praisefm",
+  "categories": ["music", "entertainment", "religion"],
   "icons": [
     {
       "src": "assets/icon192.png",
