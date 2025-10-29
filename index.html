@@ -4,8 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Praise FM - U.S Radio</title>
-  <link rel="manifest" href="manifest.json" />
-  <link rel="icon" type="image/png" href="assets/icon192.png" />
+  <link rel="manifest" href="/APK/manifest.json" />
+  <link rel="icon" type="image/png" href="/APK/assets/icon192.png" />
   <meta name="theme-color" content="#ff7b54" />
   <style>
     body {
@@ -39,7 +39,7 @@
   </style>
 </head>
 <body>
-  <img src="assets/logo.png" alt="Praise FM Logo" />
+  <img src="/APK/assets/logo.png" alt="Praise FM Logo" />
   <h1>Praise FM - U.S Radio</h1>
   <p>Praise and Worship</p>
   <audio controls>
@@ -48,17 +48,12 @@
   </audio>
   <p><a href="https://www.instagram.com/fmpraise.usa/" target="_blank" rel="noopener">Follow us on Instagram</a></p>
 
-  <!-- Service Worker Registration -->
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('service-worker.js')
-          .then(registration => {
-            console.log('Service Worker registrado com sucesso:', registration.scope);
-          })
-          .catch(error => {
-            console.warn('Falha ao registrar Service Worker:', error);
-          });
+        navigator.serviceWorker.register('/APK/service-worker.js')
+          .then(reg => console.log('SW registrado:', reg.scope))
+          .catch(err => console.warn('Erro no SW:', err));
       });
     }
   </script>
