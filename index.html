@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Praise FM - U.S Radio</title>
+  <link rel="manifest" href="manifest.json" />
+  <link rel="icon" type="image/png" href="assets/icon192.png" />
+  <meta name="theme-color" content="#ff7b54" />
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, #ff66b3, #ff9a3c, #ffd85e);
+      color: white;
+      text-align: center;
+      height: 100vh;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+    img {
+      width: 200px;
+      margin-bottom: 20px;
+    }
+    h1 { font-size: 2rem; margin: 0; }
+    p { font-size: 1rem; margin: 8px 0 16px; }
+    audio { width: 80%; max-width: 320px; margin-top: 20px; }
+    a {
+      color: white;
+      text-decoration: none;
+      background: rgba(255, 255, 255, 0.2);
+      padding: 10px 20px;
+      border-radius: 20px;
+      transition: background 0.3s;
+    }
+    a:hover { background: rgba(255, 255, 255, 0.4); }
+  </style>
+</head>
+<body>
+  <img src="assets/logo.png" alt="Praise FM Logo" />
+  <h1>Praise FM - U.S Radio</h1>
+  <p>Praise and Worship</p>
+  <audio controls autoplay>
+    <source src="https://stream.zeno.fm/hvwifp8ezc6tv" type="audio/mpeg" />
+    Your browser does not support the audio element.
+  </audio>
+  <p><a href="https://www.instagram.com/fmpraise.usa/" target="_blank">Follow us on Instagram</a></p>
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('service-worker.js');
+    }
+  </script>
+</body>
+</html>
