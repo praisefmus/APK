@@ -1,208 +1,234 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Praise FM - U.S Radio</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Praise FM — Now Playing</title>
+
+  <!-- Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-0RNK6G5WWL"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-0RNK6G5WWL');
+  </script>
+
+  <!-- Manifesto e ícone -->
   <link rel="manifest" href="/APK/manifest.json" />
   <link rel="icon" type="image/png" href="/APK/assets/icon192.png" />
-  <meta name="theme-color" content="#ff7b54" />
+  <meta name="theme-color" content="#00c28a" />
+
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
+    :root{--bg:#f6f9fa;--card:#ffffff;--muted:#61707a;--accent:#00c28a;--text:#0b1220}
+    html,body{height:100%;margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,'Helvetica Neue',Arial; background:var(--bg); color:var(--text)}
+    .wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:48px}
+    .player{width:360px;max-width:92vw;text-align:center}
+
+    .logo{height:88px;object-fit:contain;margin-bottom:18px}
+
+    .title{font-size:20px;font-weight:700;margin-bottom:14px}
+
+    .card{background:var(--card);border-radius:14px;padding:20px 22px;box-shadow:0 6px 18px rgba(13,20,30,0.06);text-align:left}
+
+    .badge{display:inline-flex;align-items:center;gap:8px;padding:6px 10px;border-radius:999px;font-weight:700;font-size:12px;color:white;background:var(--accent);box-shadow:0 6px 18px rgba(0,194,138,0.16)}
+
+    .meta{margin-top:12px}
+    .meta-row{display:flex;gap:10px;align-items:center;margin:8px 0}
+    .meta-label{width:72px;color:var(--muted);font-weight:700;font-size:13px}
+    .meta-value{font-size:14px}
+
+    .controls{display:flex;align-items:center;justify-content:space-between;margin-top:16px}
+    .play{width:64px;height:64px;border-radius:50%;background:#0b1220;color:white;display:inline-flex;align-items:center;justify-content:center;font-size:24px;cursor:pointer;box-shadow:0 6px 20px rgba(11,18,32,0.12)}
+    .small-btn{font-size:13px;color:var(--muted)}
+
+    .volume-control {flex:1;margin-left:14px;display:flex;align-items:center;gap:8px;}
+    .volume-slider {width:100%;}
+
+    .cover-img {
+      width:100%;
+      border-radius:8px;
+      margin-bottom:12px;
+      aspect-ratio:1/1;
+      object-fit:cover;
+      background:#f0f0f0;
     }
-    body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: linear-gradient(135deg, #ff66b3, #ff9a3c, #ffd85e);
-      color: white;
-      min-height: 100vh;
-      padding: 20px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-    }
-    .container {
-      max-width: 500px;
-      width: 100%;
-      background: rgba(0, 0, 0, 0.3);
-      backdrop-filter: blur(10px);
-      border-radius: 20px;
-      padding: 25px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-    }
-    .logo {
-      width: 180px;
-      margin-bottom: 20px;
-      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
-    }
-    .now-playing {
-      background: rgba(255, 255, 255, 0.15);
-      padding: 16px;
-      border-radius: 16px;
-      margin: 20px 0;
-    }
-    .cover {
-      width: 140px;
-      height: 140px;
-      border-radius: 12px;
-      object-fit: cover;
-      margin: 0 auto 16px;
-      background: rgba(255,255,255,0.2);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 40px;
-      transition: all 0.3s ease;
-    }
-    .song-title {
-      font-size: 1.3rem;
-      font-weight: 600;
-      margin-bottom: 6px;
-      word-break: break-word;
-    }
-    .artist {
-      font-size: 1.1rem;
-      opacity: 0.9;
-      word-break: break-word;
-    }
-    .player {
-      width: 100%;
-      margin: 20px 0;
-    }
-    .volume-control {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-      margin-top: 10px;
-    }
-    .volume-control label {
-      font-size: 0.9rem;
-    }
-    .volume-control input {
-      width: 100px;
-    }
-    .social {
-      margin-top: 20px;
-    }
-    .social a {
-      color: white;
-      text-decoration: none;
-      background: rgba(255, 255, 255, 0.2);
-      padding: 8px 16px;
-      border-radius: 20px;
-      font-size: 0.95rem;
-      transition: background 0.3s;
-    }
-    .social a:hover {
-      background: rgba(255, 255, 255, 0.4);
+
+    .muted-note{font-size:12px;color:var(--muted);margin-top:10px}
+
+    @media (max-width:420px){
+      .logo{height:72px}
+      .player{width:94%}
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <img src="/APK/assets/logo.png" alt="Praise FM Logo" class="logo" />
-    <h1 style="margin-top: 10px; font-size: 1.8rem;">Live Gospel Radio</h1>
+  <main class="wrap">
+    <section class="player" role="region" aria-label="Praise FM now playing">
+      <svg class="logo" viewBox="0 0 300 100" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" style="stop-color:#ff69b4;stop-opacity:1" />
+            <stop offset="100%" style="stop-color:#ffd700;stop-opacity:1" />
+          </linearGradient>
+        </defs>
+        <text x="50%" y="50%" font-size="40" font-weight="bold" fill="url(#grad)" text-anchor="middle">PRAISE FM</text>
+        <text x="50%" y="80%" font-size="20" font-weight="bold" fill="url(#grad)" text-anchor="middle">UNITED STATE</text>
+      </svg>
 
-    <div class="now-playing">
-      <div class="cover">🎵</div>
-      <div class="song-title" id="title">Carregando...</div>
-      <div class="artist" id="artist">Praise FM</div>
-    </div>
+      <div class="title">Praise FM — Now Playing</div>
 
-    <audio id="radio" class="player" controls>
-      <source src="https://stream.zeno.fm/hvwifp8ezc6tv" type="audio/mpeg" />
-      Your browser does not support the audio element.
-    </audio>
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div class="badge" id="liveBadge">LIVE NOW</div>
+          <div class="small-btn" id="statusText">Connecting…</div>
+        </div>
 
-    <div class="volume-control">
-      <label for="volume">Volume:</label>
-      <input type="range" id="volume" min="0" max="1" step="0.01" value="0.8">
-    </div>
+        <img 
+          id="cover" 
+          class="cover-img" 
+          src="https://via.placeholder.com/300x300?text=No+Cover" 
+          alt="Album Cover" 
+          loading="lazy"
+        >
 
-    <div class="social">
-      <a href="https://www.instagram.com/fmpraise.usa/" target="_blank" rel="noopener">Follow us on Instagram</a>
-    </div>
-  </div>
+        <div class="meta">
+          <div class="meta-row"><div class="meta-label">Artist:</div><div class="meta-value" id="artist">—</div></div>
+          <div class="meta-row"><div class="meta-label">Song:</div><div class="meta-value" id="song">—</div></div>
+          <div class="meta-row"><div class="meta-label">Album:</div><div class="meta-value" id="album">—</div></div>
+        </div>
+
+        <div class="controls">
+          <button class="play" id="playBtn" aria-label="Play/Pause">▶</button>
+          <div style="flex:1;margin-left:14px;display:flex;flex-direction:column;justify-content:center;align-items:flex-start">
+            <div style="font-size:13px;color:var(--muted);">Stream</div>
+            <div style="font-weight:700">Praise FM — United States</div>
+          </div>
+        </div>
+
+        <div class="volume-control">
+          <label for="volume" style="font-size:13px;color:var(--muted);">Volume:</label>
+          <input type="range" id="volume" min="0" max="1" step="0.01" value="1" class="volume-slider">
+        </div>
+
+        <div class="muted-note">Auto-updates in real-time • Built for Netlify</div>
+      </div>
+
+      <audio id="player" preload="none"></audio>
+    </section>
+  </main>
 
   <script>
-    // Elementos
-    const radio = document.getElementById('radio');
-    const titleEl = document.getElementById('title');
+    // 🔑 CONFIGURAÇÕES — SEM ESPAÇOS!
+    const STREAM_URL = 'https://stream.zeno.fm/tobnzqsvykzvv';
+    const NOWPLAYING_API = 'https://api.zeno.fm/mounts/metadata/subscribe/tobnzqsvykzvv';
+    const LASTFM_API_KEY = '7744c8f90ee053fc761e0e23bfa00b89';
+
     const artistEl = document.getElementById('artist');
+    const songEl = document.getElementById('song');
+    const albumEl = document.getElementById('album');
+    const statusText = document.getElementById('statusText');
+    const playBtn = document.getElementById('playBtn');
+    const player = document.getElementById('player');
     const volumeSlider = document.getElementById('volume');
+    const coverImg = document.getElementById('cover');
 
-    // Volume inicial
-    radio.volume = 0.8;
-    volumeSlider.value = 0.8;
-    volumeSlider.addEventListener('input', () => { radio.volume = volumeSlider.value; });
+    player.src = STREAM_URL;
+    player.crossOrigin = 'anonymous';
+    player.volume = parseFloat(volumeSlider.value);
 
-    // Função para atualizar o título/artista
-    function updateMetadata(title) {
-      if (!title || title === 'Carregando...' || title.includes('Praise FM')) {
-        titleEl.textContent = 'Live Stream';
-        artistEl.textContent = 'Praise FM';
-        return;
-      }
+    let playing = false;
 
-      // Remove sufixos comuns
-      let clean = title.replace(/\s*-\s*Stream\s*$/i, '');
-      clean = clean.replace(/\s*\[.*?\]\s*/g, '');
-      clean = clean.replace(/\s*\|.*$/g, ''); // Remove " | Praise FM"
-
-      // Divide por " - "
-      const parts = clean.split(/\s*-\s*/);
-      if (parts.length >= 2) {
-        artistEl.textContent = parts[0].trim();
-        titleEl.textContent = parts.slice(1).join(' - ').trim();
-      } else {
-        // Se não tiver " - ", assume que é só o título
-        artistEl.textContent = 'Praise FM';
-        titleEl.textContent = clean.trim();
-      }
+    function updatePlayButton() {
+      playBtn.textContent = playing ? '❚❚' : '▶';
     }
 
-    // Tenta obter o título do stream
-    function checkTitle() {
+    playBtn.addEventListener('click', async () => {
       try {
-        // Método 1: Título do elemento de áudio
-        if (radio.title && radio.title !== '') {
-          updateMetadata(radio.title);
-          return;
+        if (!playing) {
+          await player.play();
+          playing = true;
+        } else {
+          player.pause();
+          playing = false;
         }
-
-        // Método 2: Título da página (alguns streams atualizam isso)
-        if (document.title && !document.title.includes('Carregando')) {
-          updateMetadata(document.title);
-          return;
-        }
-
-        // Método 3: Fallback
-        updateMetadata(null);
-      } catch (e) {
-        console.warn('Erro ao verificar título:', e);
-        updateMetadata(null);
-      }
-    }
-
-    // Verifica a cada 5 segundos
-    setInterval(checkTitle, 5000);
-
-    // Primeira verificação
-    window.addEventListener('load', () => {
-      setTimeout(checkTitle, 1000);
-      
-      // Service Worker
-      if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('/APK/service-worker.js')
-          .then(reg => console.log('SW registrado:', reg.scope))
-          .catch(err => console.warn('Erro no SW:', err));
+        updatePlayButton();
+      } catch (err) {
+        alert('Playback failed — click anywhere and try again.');
       }
     });
+
+    volumeSlider.addEventListener('input', () => {
+      player.volume = parseFloat(volumeSlider.value);
+    });
+
+    // Atualiza metadados via SSE
+    function setupNowPlaying() {
+      const eventSource = new EventSource(NOWPLAYING_API);
+
+      eventSource.onmessage = (event) => {
+        try {
+          const data = JSON.parse(event.data);
+          let streamTitle = (data.streamTitle || 'Streaming Live').trim() || 'Streaming Live';
+          const parts = streamTitle.split(' - ').map(p => p.trim()).filter(Boolean);
+          const artist = parts[0] || 'Praise FM Radio';
+          const song = parts.length > 1 ? parts.slice(1).join(' - ') : streamTitle;
+          const album = (data.album || '—').trim();
+
+          artistEl.textContent = artist;
+          songEl.textContent = song;
+          albumEl.textContent = album;
+          statusText.textContent = 'Live';
+
+          if (artist !== 'Praise FM Radio' && song !== 'Streaming Live') {
+            fetch(
+              `https://ws.audioscrobbler.com/2.0/?method=track.getInfo&api_key=${LASTFM_API_KEY}&artist=${encodeURIComponent(artist)}&track=${encodeURIComponent(song)}&format=json`
+            )
+              .then(res => res.json())
+              .then(lastfmData => {
+                if (lastfmData.track?.album?.image) {
+                  const images = lastfmData.track.album.image;
+                  const cover = images.find(img => img.size === 'extralarge') || images[images.length - 1];
+                  coverImg.src = cover['#text'] || 'https://via.placeholder.com/300x300?text=No+Cover';
+                  if (lastfmData.track.album.title) {
+                    albumEl.textContent = lastfmData.track.album.title;
+                  }
+                } else {
+                  coverImg.src = 'https://via.placeholder.com/300x300?text=No+Cover';
+                }
+              })
+              .catch(() => {
+                coverImg.src = 'https://via.placeholder.com/300x300?text=No+Cover';
+              });
+          } else {
+            coverImg.src = 'https://via.placeholder.com/300x300?text=No+Cover';
+          }
+        } catch (err) {
+          console.warn('Metadata error:', err);
+          statusText.textContent = 'Unavailable';
+          artistEl.textContent = '—';
+          songEl.textContent = '—';
+          albumEl.textContent = '—';
+          coverImg.src = 'https://via.placeholder.com/300x300?text=No+Cover';
+        }
+      };
+
+      eventSource.onerror = () => {
+        statusText.textContent = 'Reconnecting...';
+        eventSource.close();
+        setTimeout(setupNowPlaying, 15000);
+      };
+    }
+
+    setupNowPlaying();
+
+    // Service Worker
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/APK/service-worker.js')
+          .catch(err => console.warn('SW error:', err));
+      });
+    }
   </script>
 </body>
 </html>
