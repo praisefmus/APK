@@ -105,13 +105,11 @@
 </head>
 <body>
   <div class="container">
-    <!-- Logo branco da pasta assets -->
     <img src="/APK/assets/logo.png" alt="Praise FM Logo" class="logo" />
-
     <h1 style="margin-top: 10px; font-size: 1.8rem;">Live Gospel Radio</h1>
 
     <div class="now-playing">
-      <img id="cover" class="cover" src="image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 140 140'%3E%3Crect width='140' height='140' fill='%23ffffff' opacity='0.1'/%3E%3Ctext x='70' y='75' font-size='40' text-anchor='middle' fill='%23ffffff' opacity='0.5'%3E🎵%3C/text%3E%3C/svg%3E" alt="Capa do álbum" />
+      <div class="cover">🎵</div>
       <div class="song-title" id="title">Carregando...</div>
       <div class="artist" id="artist">Praise FM</div>
     </div>
@@ -132,16 +130,10 @@
   </div>
 
   <script>
-    // === CONFIGURAÇÃO ===
-    const LAST_FM_API_KEY = '7744c8f90ee053fc761e0e23bfa00b89';
-    const RADIO_TITLE = 'Praise FM';
-    const DEFAULT_COVER = "image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 140 140'%3E%3Crect width='140' height='140' fill='%23ffffff' opacity='0.1'/%3E%3Ctext x='70' y='75' font-size='40' text-anchor='middle' fill='%23ffffff' opacity='0.5'%3E🎵%3C/text%3E%3C/svg%3E";
-
-    // === ELEMENTOS ===
+    // Elementos
     const radio = document.getElementById('radio');
     const titleEl = document.getElementById('title');
     const artistEl = document.getElementById('artist');
-    const coverEl = document.getElementById('cover');
     const volumeSlider = document.getElementById('volume');
 
     // Volume inicial
@@ -149,70 +141,62 @@
     volumeSlider.value = 0.8;
     volumeSlider.addEventListener('input', () => { radio.volume = volumeSlider.value; });
 
-    // === FUNÇÃO: Atualizar metadados da música ===
-    function updateNowPlaying(artist, title) {
-      artistEl.textContent = artist || RADIO_TITLE;
-      titleEl.textContent = title || 'Live Stream';
-      if (artist && title) {
-        fetchAlbumCover(artist, title);
-      } else {
-        coverEl.src = DEFAULT_COVER;
+    // Função para atualizar o título/artista
+    function updateMetadata(title) {
+      if (!title || title === 'Carregando...' || title.includes('Praise FM')) {
+        titleEl.textContent = 'Live Stream';
+        artistEl.textContent = 'Praise FM';
+        return;
       }
-    }
 
-    // === FUNÇÃO: Buscar capa no Last.fm ===
-    async function fetchAlbumCover(artist, track) {
-      try {
-        const url = `https://ws.audioscrobbler.com/2.0/?method=track.getInfo&api_key=${LAST_FM_API_KEY}&artist=${encodeURIComponent(artist)}&track=${encodeURIComponent(track)}&format=json`;
-        const response = await fetch(url);
-        const data = await response.json();
-
-        if (data.track?.album?.image) {
-          const images = data.track.album.image;
-          const largeImage = images.find(img => img.size === 'extralarge') || 
-                            images.find(img => img.size === 'large') || 
-                            images.find(img => img.size === 'medium');
-          if (largeImage?.['#text']) {
-            coverEl.src = largeImage['#text'];
-            return;
-          }
-        }
-      } catch (error) {
-        console.warn('Erro ao buscar capa:', error);
-      }
-      coverEl.src = DEFAULT_COVER;
-    }
-
-    // === FUNÇÃO: Extrair artista e título ===
-    function parseStreamTitle(streamTitle) {
-      if (!streamTitle || streamTitle === 'Carregando...') return null;
-      let clean = streamTitle.replace(/\s*-\s*Stream\s*$/i, '');
+      // Remove sufixos comuns
+      let clean = title.replace(/\s*-\s*Stream\s*$/i, '');
       clean = clean.replace(/\s*\[.*?\]\s*/g, '');
+      clean = clean.replace(/\s*\|.*$/g, ''); // Remove " | Praise FM"
+
+      // Divide por " - "
       const parts = clean.split(/\s*-\s*/);
       if (parts.length >= 2) {
-        return { artist: parts[0].trim(), title: parts.slice(1).join(' - ').trim() };
+        artistEl.textContent = parts[0].trim();
+        titleEl.textContent = parts.slice(1).join(' - ').trim();
+      } else {
+        // Se não tiver " - ", assume que é só o título
+        artistEl.textContent = 'Praise FM';
+        titleEl.textContent = clean.trim();
       }
-      return { artist: RADIO_TITLE, title: clean.trim() };
     }
 
-    // === MONITORAMENTO DO STREAM ===
-    let lastTitle = '';
-    function checkStreamMetadata() {
+    // Tenta obter o título do stream
+    function checkTitle() {
       try {
-        const currentTitle = radio.title || document.title;
-        if (currentTitle && currentTitle !== lastTitle && !currentTitle.includes('Carregando')) {
-          lastTitle = currentTitle;
-          const parsed = parseStreamTitle(currentTitle);
-          if (parsed) updateNowPlaying(parsed.artist, parsed.title);
+        // Método 1: Título do elemento de áudio
+        if (radio.title && radio.title !== '') {
+          updateMetadata(radio.title);
+          return;
         }
+
+        // Método 2: Título da página (alguns streams atualizam isso)
+        if (document.title && !document.title.includes('Carregando')) {
+          updateMetadata(document.title);
+          return;
+        }
+
+        // Método 3: Fallback
+        updateMetadata(null);
       } catch (e) {
-        console.warn('Erro ao verificar metadados:', e);
+        console.warn('Erro ao verificar título:', e);
+        updateMetadata(null);
       }
     }
 
-    setInterval(checkStreamMetadata, 8000);
+    // Verifica a cada 5 segundos
+    setInterval(checkTitle, 5000);
+
+    // Primeira verificação
     window.addEventListener('load', () => {
-      setTimeout(checkStreamMetadata, 2000);
+      setTimeout(checkTitle, 1000);
+      
+      // Service Worker
       if ('serviceWorker' in navigator) {
         navigator.serviceWorker.register('/APK/service-worker.js')
           .then(reg => console.log('SW registrado:', reg.scope))
