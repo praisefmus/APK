@@ -1,6 +1,29 @@
-"start_url": "/APK/",
-"scope": "/APK/",
-"icons": [
-  { "src": "/APK/assets/icon192.png", "sizes": "192x192", "type": "image/png" },
-  { "src": "/APK/assets/icon512.png", "sizes": "512x512", "type": "image/png" }
-]
+{
+  "name": "Praise FM — Now Playing",
+  "short_name": "Praise FM",
+  "description": "Live Gospel Radio from the United States. Real-time artist, song, and album info with album art.",
+  "start_url": "/APK/",
+  "scope": "/APK/",
+  "display": "standalone",
+  "background_color": "#f6f9fa",
+  "theme_color": "#00c28a",
+  "lang": "en-US",
+  "dir": "ltr",
+  "orientation": "portrait",
+  "id": "com.praisefmus.praisefm",
+  "categories": ["music", "entertainment", "religion"],
+  "icons": [
+    {
+      "src": "/APK/assets/icon192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/APK/assets/icon512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ],
+  "prefer_related_applications": false,
+  "related_applications": []
+}
