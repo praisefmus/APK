@@ -1,4 +1,4 @@
-const CACHE_NAME = 'praisefm-v1';
+const CACHE_NAME = 'praisefm-v2'; // ⬅️ aumente a versão para forçar atualização
 const urlsToCache = [
   '/APK/',
   '/APK/index.html',
@@ -29,16 +29,25 @@ self.addEventListener('activate', event => {
 });
 
 self.addEventListener('fetch', event => {
-  if (event.request.url.startsWith('https://stream.zeno.fm')) {
-    return;
+  const requestUrl = event.request.url;
+
+  // Não fazer cache de streams de áudio ou outros recursos externos
+  if (
+    requestUrl.startsWith('https://stream.zeno.fm/') ||
+    requestUrl.startsWith('https://api.zeno.fm/') ||
+    !requestUrl.startsWith(self.location.origin)
+  ) {
+    return; // Deixa o navegador lidar diretamente
   }
+
   event.respondWith(
-    caches.match(event.request)
-      .then(response => response || fetch(event.request))
-      .catch(() => {
-        if (event.request.destination === 'document') {
-          return caches.match('/APK/index.html');
-        }
-      })
+    caches.match(event.request).then(response => {
+      return response || fetch(event.request);
+    }).catch(() => {
+      // Fallback para index.html em rotas desconhecidas (útil se usar SPA)
+      if (event.request.destination === 'document') {
+        return caches.match('/APK/index.html');
+      }
+    })
   );
 });
